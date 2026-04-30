@@ -1,61 +1,82 @@
 PI Web API client library for Python (2017 R2)
+===
 
-Overview
-
+## Overview
 This repository has the source code package of the PI Web API client libraries for Python. This version was developed on top of the PI Web API 2017 R2 swagger specification.
 
-Requirements
+## Requirements
 
-PI Web API 2017 R2 installed within your domain using Kerberos or Basic Authentication. If you are using an older version, some methods might not work.
-Python 2.7 and 3.4+
-Installation
+ - PI Web API 2017 R2 installed within your domain using Kerberos or Basic Authentication. If you are using an older version, some methods might not work.
+ - Python 2.7 and 3.4+
 
-pip install
+## Installation
+### pip install
 
 If the python package is hosted on Github, you can install directly from Github
 
+
+```sh
 pip install osisoft.pidevclub.piwebapi
-You may need to run pip with root permission: sudo pip install osisoft.pidevclub.piwebapi. If you are using Windows, remember to open the command prompt running as administrator. You must have Git installed on your machine.
+```
+
+You may need to run `pip` with root permission: `sudo pip install osisoft.pidevclub.piwebapi`. If you are using Windows, remember to open the command prompt running as administrator. You must have Git installed on your machine.
 
 Then import the package:
-
+```python
 import osisoft.pidevclub.piwebapi 
-Setuptools
+```
 
-Install via Setuptools.
+### Setuptools
 
+Install via [Setuptools](http://pypi.python.org/pypi/setuptools).
+
+```sh
 python setup.py install --user
-(or sudo python setup.py install to install the package for all users)
+```
+(or `sudo python setup.py install` to install the package for all users)
 
 Then import the package:
-
+```python
 import osisoft.pidevclub.piwebapi
+```
+
 This library was tested using PyCharm 2018.1.2.
 
-Documentation
+## Documentation
 
-All classes and methods are described on the DOCUMENTATION.
+All classes and methods are described on the [DOCUMENTATION](DOCUMENTATION.md). 
 
-Notes
+## Notes
 
-Is is highly recommended to turn debug mode on in case you are using PI Web API 2017 R2+ in order to receive more detailed exception errors. This can be achieved by creating or editing the DebugMode attribute's value to TRUE from the System Configuration element.
-The X-Requested-With header is added to work with CSRF defences.
-Examples
+ - Is is highly recommended to turn debug mode on in case you are using PI Web API 2017 R2+ in order to receive more detailed exception errors. This can be achieved by creating or editing the DebugMode attribute's value to TRUE from the System Configuration element.
+ - The X-Requested-With header is added to work with CSRF defences.
+ 
+## Examples
 
-Please check the test_main.py from this repository. Below there are also code snippets written in Python for you to get started using this library:
+Please check the [test_main.py](/test/test_main.py) from this repository. Below there are also code snippets written in Python for you to get started using this library:
 
-Create an instance of the PI Web API top level object.
 
-Basic Authentication
+### Create an instance of the PI Web API top level object.
 
+#### Basic Authentication
+```python
     from osisoft.pidevclub.piwebapi.pi_web_api_client import PIWebApiClient
     client = PIWebApiClient("https://test.osisoft.com/piwebapi", useKerberos=False, username="username", password="password", verifySsl=true)  
-Kerberos Authentication
+``` 
 
+#### Kerberos Authentication
+```python
     from osisoft.pidevclub.piwebapi.pi_web_api_client import PIWebApiClient
     client = PIWebApiClient("https://test.osisoft.com/piwebapi", useKerberos=True, verifySsl=False)  
-Retrieving PI data to an Python pandas data frame
+``` 
 
+
+
+
+### Retrieving PI data to an Python pandas data frame
+
+
+```python
     df1 = client.data.get_recorded_values("pi:\\\\PISRV1\\sinusoid", start_time="*-1d", end_time="*")
     df2 = client.data.get_interpolated_values("pi:\\PISRV1\\sinusoid", start_time="*-1d", end_time="*", interval="1h")
     df3 = client.data.get_plot_values("pi:\\\\PISRV1\\sinusoid", end_time="*", intervals=15, start_time= "*-1d")
@@ -66,13 +87,22 @@ Retrieving PI data to an Python pandas data frame
     dfs2 = client.data.get_multiple_interpolated_values(paths, start_time="*-1d", end_time="*", interval="1h")
     dfs3 = client.data.get_multiple_plot_values(paths,  start_time="*-1d", end_time="*", intervals="14")
     dfs4 = client.data.get_multiple_recorded_values(paths, start_time="*-1d", end_time="*", selected_fields="items.items.value;items.items.timestamp")
+```
+
 The path from the methods above should start with "pi:" (if your stream is a PI Point) or "af:" (if your stream is an AF attribute).
 
-Get the PI Data Archive WebId
 
+
+
+### Get the PI Data Archive WebId
+
+```python
     dataServer = client.dataServer.get_by_path("\\\\PISRV1");
-Create a new PI Point
+```
 
+### Create a new PI Point
+
+```python
     newPoint = PIPoint()
     newPoint.name  = "SINUSOID_TEST"
     newPoint.descriptor = "Test PI Point for Python PI Web API Client"
@@ -80,13 +110,19 @@ Create a new PI Point
     newPoint.point_type = "float32"
     newPoint.future = False
     res = client.dataServer.create_point_with_http_info(dataServer.web_id, newPoint);         
-Get PI Points WebIds
+```
 
+### Get PI Points WebIds
+
+```python
     point1 = client.point.get_by_path("\\\\PISRV1\\sinusoid");
     point2 = client.point.get_by_path("\\\\PISRV1\\cdt158");
     point3 = client.point.get_by_path("\\\\PISRV1\\sinusoidu");
-Get recorded values in bulk using the StreamSet/GetRecordedAdHoc
+```
 
+### Get recorded values in bulk using the StreamSet/GetRecordedAdHoc
+
+```python
     webIds = list()
     webIds.append(point1.web_id);
     webIds.append(point2.web_id);
@@ -94,8 +130,11 @@ Get recorded values in bulk using the StreamSet/GetRecordedAdHoc
     piItemsStreamValues = client.streamSet.get_recorded_ad_hoc(webIds, start_time="*-3d", end_time="*",
                                                                    include_filtered_values=True, max_count=1000)
             
-Send values in bulk using the StreamSet/UpdateValuesAdHoc
+```
 
+### Send values in bulk using the StreamSet/UpdateValuesAdHoc
+
+```python
     streamValuesItems = PIItemsStreamValues()
     streamValue1 = PIStreamValues()
     streamValue2 = PIStreamValues()
@@ -145,8 +184,11 @@ Send values in bulk using the StreamSet/UpdateValuesAdHoc
     streamValues.append(streamValue2)
     streamValues.append(streamValue3)
     response = client.streamSet.update_values_ad_hoc_with_http_info(streamValues)
-PI Web API Batch
+```
 
+### PI Web API Batch
+
+```python
     req1 = PIRequest()
     req2 = PIRequest()
     req3 = PIRequest()
@@ -169,13 +211,21 @@ PI Web API Batch
     point1 = client.api_client.deserialize_object(batchResponse["1"].content, 'PIPoint')
     point2 = client.api_client.deserialize_object(batchResponse["2"].content, 'PIPoint')
     itemsStreamValue = client.api_client.deserialize_object(batchResponse["3"].content, 'PIItemsStreamValue') 
-Get an element and an attribute by path
+```
 
+
+### Get an element and an attribute by path
+
+```python
     element = client.element.get_by_path("\\\\PISRV1\\City Bikes\\(TO)BIKE")
     attribute = client.attribute.get_by_path("\\\\PISRV1\\City Bikes\\(TO)BIKE\\01. Certosa   P.le Avis|Empty Slots",
                                                  selected_fields="Name")     
-Generating Web ID 2.0 and getting information
+```
 
+### Generating Web ID 2.0 and getting information
+
+
+```python
     client = self.getPIWebApiClient()
     pi_data_server_web_id = client.webIdHelper.generate_web_id_by_path("\\\\PISRV1", type(PIDataServer()), None)
     point1_web_id = client.webIdHelper.generate_web_id_by_path("\\\\PISRV1\\SINUSOID", type(PIPoint()))
